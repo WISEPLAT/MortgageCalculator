@@ -134,11 +134,11 @@ class MortgageCalculatorApp(MDApp):
             "youtube": "My YouTube",
             "coffee": "Donate author",
             "github": "Source code",
-            "share-variant": "Share app",  # air-horn
+            "share-variant": "Share app",  #air-horn
             "shield-sun": "Dark/Light",
         }
         icons_item_menu_tabs = {
-            "calculator-variant": "Input",  # ab-testing
+            "calculator-variant": "Input",  #ab-testing
             "table-large": "Table",
             "chart-areaspline": "Graph",
             "chart-pie": "Chart",  # chart-arc
