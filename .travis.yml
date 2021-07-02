@@ -31,7 +31,7 @@ install:
   - ls bin/ -l
   - echo "TODO"
   - gem install dpl --pre
-  - dpl releases --token $GITHUB_TOKEN --file "bin/mortgagecalculator-0.4-armeabi-v7a-debug.apk" --tag_name "v.0.4"
+  - dpl releases --token $GITHUB_TOKEN --file "bin/mortgagecalculator-0.5-armeabi-v7a-debug.apk" --tag_name "v.0.5"
   - echo "TODO COMPILE 64bit"
   - ls -la
   - rm -r -f .buildozer
@@ -42,5 +42,5 @@ install:
   - ls bin/ -l
   - echo "TODO"
   - gem install dpl --pre
-  - dpl releases --token $GITHUB_TOKEN --file "bin/mortgagecalculator-0.4-arm64-v8a-debug.apk" --tag_name "v.0.4"
+  - dpl releases --token $GITHUB_TOKEN --file "bin/mortgagecalculator-0.5-arm64-v8a-debug.apk" --tag_name "v.0.5"
   - echo "OK"
