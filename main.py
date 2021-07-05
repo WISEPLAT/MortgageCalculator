@@ -1,3 +1,7 @@
+#pip install kivy
+#pip install kivymd
+#pip install https://github.com/kivymd/KivyMD/archive/3274d62.zip
+
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import StringProperty, ListProperty
@@ -8,8 +12,13 @@ from kivymd.uix.list import OneLineIconListItem, MDList
 
 from kivymd.uix.tab import MDTabsBase
 from kivymd.uix.floatlayout import MDFloatLayout
-from kivymd.icon_definitions import md_icons
+
 from kivymd.font_definitions import fonts
+from kivymd.icon_definitions import md_icons
+
+from kivymd.uix.menu import MDDropdownMenu
+from kivy.clock import Clock
+
 
 KV = '''
 #https://stackoverflow.com/questions/65698145/kivymd-tab-name-containing-icons-and-text
@@ -56,6 +65,8 @@ KV = '''
         font_style: "Caption"
         size_hint_y: None
         height: self.texture_size[1]
+
+
 
     ScrollView:
 
@@ -161,12 +172,12 @@ Screen:
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['book-open-variant']}[/size][/font] Sum"
          
 
-
         MDNavigationDrawer:
             id: nav_drawer
 
             ContentNavigationDrawer:
                 id: content_drawer
+                
 '''
 
 
@@ -199,8 +210,32 @@ class MortgageCalculatorApp(MDApp):
     title = "Mortgage Calculator"
     by_who = "author Oleg Shpagin"
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.screen = Builder.load_string(KV)
+        # https://kivymd.readthedocs.io/en/latest/components/menu/?highlight=MDDropDownItem#center-position
+        #menu_items = [{"icon": "git", "text": f"Item {i}"} for i in range(5)]
+        menu_items = [{"icon": "format-text-rotation-angle-up", "text": "annuity"},
+                      {"icon": "format-text-rotation-angle-down", "text": "differentiated"}]
+        self.menu = MDDropdownMenu(
+            caller=self.screen.ids.payment_type,
+            items=menu_items,
+            position="auto",
+            width_mult=4,
+        )
+        self.menu.bind(on_release=self.set_item)
+
+    def set_item(self, instance_menu, instance_menu_item):
+        def set_item(interval):
+            self.screen.ids.payment_type.text = instance_menu_item.text
+            instance_menu.dismiss()
+
+        Clock.schedule_once(set_item, 0.5)
+
     def build(self):
-        return Builder.load_string(KV)
+        # self.theme_cls.theme_style = "Light"  # "Dark"  # "Light"
+        # return Builder.load_string(KV)
+        return self.screen
 
     def on_start(self):
         icons_item_menu_lines = {
