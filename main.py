@@ -19,6 +19,9 @@ from kivymd.icon_definitions import md_icons
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.clock import Clock
 
+from kivymd.uix.picker import MDDatePicker
+import datetime
+
 
 KV = '''
 #https://stackoverflow.com/questions/65698145/kivymd-tab-name-containing-icons-and-text
@@ -92,19 +95,19 @@ Screen:
                         left_action_items: [['menu', lambda x: nav_drawer.set_state("open")]]
                         right_action_items: [["star-outline", lambda x: app.on_star_click()]]
                         md_bg_color: 0, 0, 0, 1
-
+                        
                     MDTabs:
                         id: tabs
-                        on_tab_switch: app.on_tab_switch(*args)
+                        on_tab_switch: app.on_tab_switch(*args)                        
                         height: "48dp"
                         tab_indicator_anim: False
                         background_color: 0.1, 0.1, 0.1, 1
-
+                    
                         Tab:
                             id: tab1
                             name: 'tab1'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['calculator-variant']}[/size][/font] Input"
-                        
+                            
                             BoxLayout:
                                 orientation: 'vertical'
                                 padding: "10dp"   
@@ -116,7 +119,9 @@ Screen:
                                         icon: "calendar-month"
                                         
                                     MDTextField:
+                                        id: start_date
                                         hint_text: "Start date"
+                                        on_focus: if self.focus: app.date_dialog.open()
                                 
                                 BoxLayout:
                                     orientation: 'horizontal'                         
@@ -125,6 +130,7 @@ Screen:
                                         icon: "cash"
                                         
                                     MDTextField:
+                                        id: loan
                                         hint_text: "Loan"
                                     
                                 BoxLayout:
@@ -134,6 +140,7 @@ Screen:
                                         icon: "clock-time-five-outline"
                                             
                                     MDTextField:
+                                        id: months
                                         hint_text: "Months"
                                     
                                 BoxLayout:
@@ -143,14 +150,56 @@ Screen:
                                         icon: "bank"
                                             
                                     MDTextField:
+                                        id: interest
                                         hint_text: "Interest, %"
                                     
                                     MDTextField:
                                         id: payment_type
                                         hint_text: "Payment type"
                                         on_focus: if self.focus: app.menu.open()
+                                
+                                MDSeparator:
+                                    height: "1dp"
+                                    
+                                
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    
+                                    AnchorLayout:
+                                        anchor_x: 'center'
+                                
+                                        MDRectangleFlatIconButton:
+                                            icon: "android"
+                                            text: "BUTTON1"
+                                            theme_text_color: "Custom"
+                                            text_color: 1, 1, 1, 1
+                                            line_color: 0, 0, 0, 1
+                                            icon_color: 1, 0, 0, 1
+                                            md_bg_color: 0.1, 0.1, 0.1, 1
+                                            adaptive_width: True
+                                            on_release: app.calc_table(*args)
+                                    
+                                    AnchorLayout:
+                                        anchor_x: 'center'
+                                    
+                                        MDRectangleFlatIconButton:
+                                            icon: "android"
+                                            text: "BUTTON2"
+                                            theme_text_color: "Custom"
+                                            text_color: 1, 1, 1, 1
+                                            line_color: 0, 0, 0, 1
+                                            icon_color: 1, 0, 0, 1
+                                            md_bg_color: 0.1, 0.1, 0.1, 1
+                                    
+                                    AnchorLayout:
+                                        anchor_x: 'center'
+                                        
+                                        Button:
+                                            text: "Test Ok"
+                                            size_hint_y: .5
+                                            background_color: (0.1, 0.1, 0.1, 1.0)
                                  
-                                 
+                        
                         Tab:
                             id: tab2
                             name: 'tab2'
@@ -171,7 +220,7 @@ Screen:
                             name: 'tab5'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['book-open-variant']}[/size][/font] Sum"
          
-
+                    
         MDNavigationDrawer:
             id: nav_drawer
 
@@ -225,6 +274,13 @@ class MortgageCalculatorApp(MDApp):
         )
         self.menu.bind(on_release=self.set_item)
 
+        # https://kivymd.readthedocs.io/en/latest/components/pickers/?highlight=date%20picker#
+        self.date_dialog = MDDatePicker(
+            callback=self.get_date,
+            background_color=(0.1, 0.1, 0.1, 1.0),
+        )
+
+
     def set_item(self, instance_menu, instance_menu_item):
         def set_item(interval):
             self.screen.ids.payment_type.text = instance_menu_item.text
@@ -232,12 +288,25 @@ class MortgageCalculatorApp(MDApp):
 
         Clock.schedule_once(set_item, 0.5)
 
+    def get_date(self, date):
+        '''
+        :type date: <class 'datetime.date'>
+        '''
+        print(date)
+        self.screen.ids.start_date.text = date.strftime("%d-%m-%Y") # str(date)
+
     def build(self):
         # self.theme_cls.theme_style = "Light"  # "Dark"  # "Light"
         # return Builder.load_string(KV)
         return self.screen
 
     def on_start(self):
+        self.screen.ids.start_date.text = datetime.date.today().strftime("%d-%m-%Y")
+        self.screen.ids.loan.text = "5000000"
+        self.screen.ids.months.text = "120"
+        self.screen.ids.interest.text = "9.5"
+        self.screen.ids.payment_type.text = "annuity"
+
         icons_item_menu_lines = {
             "account-cowboy-hat": "About author",
             "youtube": "My YouTube",
