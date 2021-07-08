@@ -349,5 +349,39 @@ class MortgageCalculatorApp(MDApp):
     def on_star_click(self):
         print("star clicked!")
 
+    def calc_table(self, *args):
+        print("button1 pressed")
+        start_date = self.screen.ids.start_date.text
+        loan = self.screen.ids.loan.text
+        months = self.screen.ids.months.text
+        interest = self.screen.ids.interest.text
+        payment_type = self.screen.ids.payment_type.text
+        print(start_date+" "+loan+" "+months+" "+interest+" "+payment_type)
+        # convert to date object, float, and so on
+        start_date = datetime.datetime.strptime(self.screen.ids.start_date.text, "%d-%m-%Y").date()
+        loan = float(loan)
+        months = int(months)
+        interest = float(interest)
+
+        #annuity payment
+        #https://temabiz.com/finterminy/ap-formula-i-raschet-annuitetnogo-platezha.html
+        percent = interest/100/12
+        monthly_payment = loan*(percent+percent/((1+percent)**months-1))
+        print(monthly_payment)
+
+        debt_end_month = loan
+        for i in range(0, months):
+            repayment_of_interest = debt_end_month*percent
+            repayment_of_loan_body = monthly_payment-repayment_of_interest
+            debt_end_month = debt_end_month-repayment_of_loan_body
+            print(monthly_payment, repayment_of_interest, repayment_of_loan_body, debt_end_month)
+
+        total_amount_of_payments = monthly_payment * months
+        overpayment_loan = total_amount_of_payments-loan
+        effective_interest_rate = ((total_amount_of_payments/loan-1)/(months/12))*100
+        print(total_amount_of_payments, overpayment_loan, effective_interest_rate)
+
+        pass
+
 
 MortgageCalculatorApp().run()
