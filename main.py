@@ -21,7 +21,7 @@ from kivy.clock import Clock
 
 from kivymd.uix.picker import MDDatePicker
 import datetime
-
+import calendar
 
 KV = '''
 #https://stackoverflow.com/questions/65698145/kivymd-tab-name-containing-icons-and-text
@@ -204,6 +204,15 @@ Screen:
                             id: tab2
                             name: 'tab2'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['table-large']}[/size][/font] Table"
+                            
+                            BoxLayout:
+                                orientation: 'vertical'
+                                padding: "10dp" 
+                                
+                                ScrollView:
+                                
+                                    MDList:
+                                        id: table_list
                         
                         Tab:
                             id: tab3
@@ -226,7 +235,37 @@ Screen:
 
             ContentNavigationDrawer:
                 id: content_drawer
-                
+
+<ItemTable>:
+    size_hint_y: None
+    height: "42dp"
+
+    canvas:
+        Color:
+            rgba: root.color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    MDLabel:
+        text: root.num
+        halign: "center"
+    MDLabel:
+        text: root.date
+        halign: "center"
+    MDLabel:
+        text: root.payment
+        halign: "center"
+    MDLabel:
+        text: root.interest
+        halign: "center"
+    MDLabel:
+        text: root.principal
+        halign: "center"
+    MDLabel:
+        text: root.debt
+        halign: "center"
+                        
 '''
 
 
@@ -255,6 +294,28 @@ class Tab(MDFloatLayout, MDTabsBase):
     pass
 
 
+class ItemTable(BoxLayout):
+    num = StringProperty()
+    date = StringProperty()
+    payment = StringProperty()
+    interest = StringProperty()
+    principal = StringProperty()
+    debt = StringProperty()
+    color = ListProperty()
+
+
+# https://stackoverflow.com/questions/2249956/how-to-get-the-same-day-of-next-month-of-a-given-day-in-python-using-datetime
+def next_month_date(d):
+    _year = d.year + (d.month // 12)
+    _month = 1 if (d.month // 12) else d.month + 1
+    next_month_len = calendar.monthrange(_year, _month)[1]
+    next_month = d
+    if d.day > next_month_len:
+        next_month = next_month.replace(day=next_month_len)
+    next_month = next_month.replace(year=_year, month=_month)
+    return next_month
+
+
 class MortgageCalculatorApp(MDApp):
     title = "Mortgage Calculator"
     by_who = "author Oleg Shpagin"
@@ -262,10 +323,9 @@ class MortgageCalculatorApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.screen = Builder.load_string(KV)
-        # https://kivymd.readthedocs.io/en/latest/components/menu/?highlight=MDDropDownItem#center-position
+        #https://kivymd.readthedocs.io/en/latest/components/menu/?highlight=MDDropDownItem#center-position
         #menu_items = [{"icon": "git", "text": f"Item {i}"} for i in range(5)]
-        menu_items = [{"icon": "format-text-rotation-angle-up", "text": "annuity"},
-                      {"icon": "format-text-rotation-angle-down", "text": "differentiated"}]
+        menu_items = [{"icon": "format-text-rotation-angle-up", "text": "annuity"}, {"icon": "format-text-rotation-angle-down", "text": "differentiated"}]
         self.menu = MDDropdownMenu(
             caller=self.screen.ids.payment_type,
             items=menu_items,
@@ -274,12 +334,11 @@ class MortgageCalculatorApp(MDApp):
         )
         self.menu.bind(on_release=self.set_item)
 
-        # https://kivymd.readthedocs.io/en/latest/components/pickers/?highlight=date%20picker#
+        #https://kivymd.readthedocs.io/en/latest/components/pickers/?highlight=date%20picker#
         self.date_dialog = MDDatePicker(
             callback=self.get_date,
             background_color=(0.1, 0.1, 0.1, 1.0),
         )
-
 
     def set_item(self, instance_menu, instance_menu_item):
         def set_item(interval):
@@ -381,7 +440,47 @@ class MortgageCalculatorApp(MDApp):
         effective_interest_rate = ((total_amount_of_payments/loan-1)/(months/12))*100
         print(total_amount_of_payments, overpayment_loan, effective_interest_rate)
 
-        pass
+        # https://kivymd.readthedocs.io/en/latest/themes/color-definitions/
+        self.screen.ids.table_list.clear_widgets()
+        self.screen.ids.table_list.add_widget(
+            ItemTable(
+                color=(0.2, 0.2, 0.2, 0.5),
+                num="№",
+                date="Date",
+                payment="Payment",
+                interest="Interest",
+                principal="Principal",
+                debt="Debt",
+            )
+        )
+
+        debt_end_month = loan
+        for i in range(0, months):
+            row_color = (1, 1, 1, 1)
+            if (i % 2 != 0):
+                row_color = (0.2, 0.2, 0.2, 0.1)
+            repayment_of_interest = debt_end_month * percent
+            repayment_of_loan_body = monthly_payment - repayment_of_interest
+            debt_end_month = debt_end_month - repayment_of_loan_body
+
+            self.screen.ids.table_list.add_widget(
+                ItemTable(
+                    color=row_color,  # (0, 0, 0, 1),
+                    num=str(i + 1),
+                    date=start_date.strftime("%d-%m-%Y"),
+                    payment=str(round(monthly_payment, 2)),
+                    interest=str(round(repayment_of_interest, 2)),
+                    principal=str(round(repayment_of_loan_body, 2)),
+                    debt=str(round(debt_end_month, 2)),
+                )
+            )
+
+            # d = datetime.datetime.today()
+            # print(next_month_date(d))
+            # start_date = start_date + datetime.timedelta(days=30)
+            start_date = next_month_date(start_date)
+
+    pass
 
 
 MortgageCalculatorApp().run()
