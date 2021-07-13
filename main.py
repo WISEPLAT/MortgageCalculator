@@ -23,6 +23,9 @@ from kivymd.uix.picker import MDDatePicker
 import datetime
 import calendar
 
+from kivy.graphics import Color, Rectangle, Line
+from random import random as r
+
 KV = '''
 #https://stackoverflow.com/questions/65698145/kivymd-tab-name-containing-icons-and-text
 # this import will prevent disappear tabs through some clicks on them)))
@@ -218,11 +221,85 @@ Screen:
                             id: tab3
                             name: 'tab3'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-areaspline']}[/size][/font] Graph"
+                              
+                            BoxLayout:
+                                orientation: 'vertical'
+                                padding: "10dp"
+                                
+                                
+                                BoxLayout:
+                                    orientation: 'vertical'
+                                    padding: "10dp"
+                                    size_hint_x: 1
+                                    size_hint_y: None
+                                    height: 50
+                                       
+                                    canvas:
+                                        Color:
+                                            rgba: 0.2, 0.2, 0.2, 0.1
+                                        Rectangle:
+                                            size: self.size
+                                            pos: self.pos
+                                                                         
+                                    MDLabel:
+                                        text: "Payment"
+                                        halign: "center"
+                                        font_style: "H5"
+                                        height: "48dp"
+                                    
+                                BoxLayout:
+                                    orientation: 'vertical'
+                                    padding: "10dp"
+                                    id: graph
+                                    
+                                    canvas:
+                                        Color:
+                                            rgba: 1, 1, 1, .6
+                                        Rectangle:
+                                            size: self.size
+                                            pos: self.pos    
                         
                         Tab:
                             id: tab4
                             name: 'tab4'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-pie']}[/size][/font] Chart"
+                            
+                            BoxLayout:
+                                orientation: 'vertical'
+                                padding: "10dp"
+                                
+                                
+                                BoxLayout:
+                                    orientation: 'vertical'
+                                    padding: "10dp"
+                                    size_hint_x: 1
+                                    size_hint_y: None
+                                    height: 50
+                                       
+                                    canvas:
+                                        Color:
+                                            rgba: 0.2, 0.2, 0.2, 0.1
+                                        Rectangle:
+                                            size: self.size
+                                            pos: self.pos
+                                                                         
+                                    MDLabel:
+                                        text: "Total payments"
+                                        halign: "center"
+                                        font_style: "H5"
+                                        height: "48dp"
+                                    
+                                BoxLayout:
+                                    orientation: 'vertical'
+                                    padding: "10dp"
+                                    id: chart
+                                    
+                                    canvas:
+                                        Color:
+                                            rgba: 1, 1, 1, .6
+                                        Rectangle:
+                                            size: self.size
+                                            pos: self.pos
                         
                         Tab:
                             id: tab5
@@ -314,6 +391,21 @@ def next_month_date(d):
         next_month = next_month.replace(day=next_month_len)
     next_month = next_month.replace(year=_year, month=_month)
     return next_month
+
+
+#https://kivy.org/doc/stable/examples/gen__canvas__canvas_stress__py.html
+def show_canvas_stress(wid):
+    with wid.canvas:
+        for x in range(10):
+            Color(r(), 1, 1, mode='hsv')
+            Rectangle(pos=(r() * wid.width + wid.x, r() * wid.height + wid.y), size=(20, 20))
+
+
+
+def draw_graph(wid):
+    with wid.canvas:
+        Color(.2, .2, .2, 1)
+        Line(rectangle=(20, 20, wid.width-20, wid.height-20), width=2)
 
 
 class MortgageCalculatorApp(MDApp):
@@ -480,7 +572,26 @@ class MortgageCalculatorApp(MDApp):
             # start_date = start_date + datetime.timedelta(days=30)
             start_date = next_month_date(start_date)
 
-    pass
+        # wid = self.screen.ids.graph
+        # with wid.canvas:
+        #     for x in range(10):
+        #         Color(r(), 1, 1, mode='hsv')
+        #         Rectangle(pos=(r() * wid.width + wid.x,
+        #                        r() * wid.height + wid.y), size=(20, 20))
+        #
+        # wid = self.screen.ids.chart
+        # with wid.canvas:
+        #     for x in range(10):
+        #         Color(r(), 1, 1, mode='hsv')
+        #         Rectangle(pos=(r() * wid.width + wid.x,
+        #                        r() * wid.height + wid.y), size=(20, 20))
+
+        show_canvas_stress(self.screen.ids.graph)
+        show_canvas_stress(self.screen.ids.chart)
+
+        draw_graph(self.screen.ids.graph)
+
+        pass
 
 
 MortgageCalculatorApp().run()
