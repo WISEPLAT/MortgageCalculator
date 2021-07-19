@@ -23,7 +23,7 @@ from kivymd.uix.picker import MDDatePicker
 import datetime
 import calendar
 
-from kivy.graphics import Color, Rectangle, Line
+from kivy.graphics import Color, Rectangle, Line, Ellipse
 from random import random as r
 
 KV = '''
@@ -254,10 +254,39 @@ Screen:
                                     
                                     canvas:
                                         Color:
-                                            rgba: 1, 1, 1, .6
+                                            rgba: 1, 1, 1, 1
                                         Rectangle:
                                             size: self.size
-                                            pos: self.pos    
+                                            pos: self.pos   
+                                
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    size_hint_x: 1
+                                    size_hint_y: None
+                                    height: 50  
+                                    
+                                    MDIcon:
+                                        icon: "checkbox-blank"
+                                        halign: "right"
+                                        color: 0, 0, 1, 1
+                                        
+                                    MDLabel:
+                                        text: "Interest"
+                                        halign: "left"
+                                        font_style: "H6"
+                                        height: "48dp"
+                                        
+                                    MDIcon:
+                                        icon: "checkbox-blank"
+                                        halign: "right"
+                                        color: 1, 0, 0, 1
+                                        
+                                    MDLabel:
+                                        text: "Principal"
+                                        halign: "left"
+                                        font_style: "H6"
+                                        height: "48dp"   
                         
                         Tab:
                             id: tab4
@@ -300,6 +329,35 @@ Screen:
                                         Rectangle:
                                             size: self.size
                                             pos: self.pos
+                                
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    size_hint_x: 1
+                                    size_hint_y: None
+                                    height: 50  
+                                    
+                                    MDIcon:
+                                        icon: "checkbox-blank"
+                                        halign: "right"
+                                        color: 0, 0, 1, 1
+                                        
+                                    MDLabel:
+                                        text: "Interest"
+                                        halign: "left"
+                                        font_style: "H6"
+                                        height: "48dp"
+                                        
+                                    MDIcon:
+                                        icon: "checkbox-blank"
+                                        halign: "right"
+                                        color: 1, 0, 0, 1
+                                        
+                                    MDLabel:
+                                        text: "Principal"
+                                        halign: "left"
+                                        font_style: "H6"
+                                        height: "48dp"
                         
                         Tab:
                             id: tab5
@@ -402,11 +460,47 @@ def show_canvas_stress(wid):
 
 
 
-def draw_graph(wid):
+def draw_graph(wid, start_date, loan, months, interest, payment_type):
+    #print(wid.x, wid.y)
     with wid.canvas:
         Color(.2, .2, .2, 1)
-        Line(rectangle=(20, 20, wid.width-20, wid.height-20), width=2)
+        Line(rectangle=(wid.x, wid.y, wid.width, wid.height), width=1)
+    graph_height = wid.height
+    delta_width = wid.width / months
 
+    percent = interest / 100 / 12
+    monthly_payment = loan * (percent + percent / ((1 + percent) ** months - 1))
+
+    debt_end_month = loan
+    for i in range(0, months):
+        repayment_of_interest = debt_end_month * percent
+        repayment_of_loan_body = monthly_payment - repayment_of_interest
+        debt_end_month = debt_end_month - repayment_of_loan_body
+        delta_height_interest = int(repayment_of_interest * graph_height / monthly_payment)
+        delta_height_loan = int(repayment_of_loan_body * graph_height / monthly_payment)
+        print("####: ", delta_height_loan, delta_height_loan)
+        print(monthly_payment, repayment_of_interest, repayment_of_loan_body, debt_end_month)
+        with wid.canvas:
+            Color(1, 0, 0, 1)
+            Rectangle(pos=(wid.x + int(i * delta_width), wid.y), size=(int(delta_width), delta_height_loan))
+            Color(0, 0, 1, 1)
+            Rectangle(pos=(wid.x + int(i * delta_width), wid.y+delta_height_loan), size=(int(delta_width), delta_height_interest))
+
+def draw_chart(wid, total_amount_of_payments, loan):
+    interest_chart = ((total_amount_of_payments - loan) * 360) / total_amount_of_payments
+    circle_width = wid.width
+    center_x = 0
+    center_y = wid.height // 2 - circle_width // 2
+    if (wid.width > wid.height):
+        circle_width = wid.height
+        center_x = wid.width // 2 - circle_width // 2
+        center_y = 0
+    #print(wid.x, wid.y)
+    with wid.canvas:
+        Color(0, 0, 1, 1)
+        Ellipse(pos=(wid.x+center_x, wid.y+center_y), size=(circle_width, circle_width), angle_start=360-int(interest_chart), angle_end=360)
+        Color(1, 0, 0, 1)
+        Ellipse(pos=(wid.x+center_x, wid.y+center_y), size=(circle_width, circle_width), angle_start=0, angle_end=360-int(interest_chart))
 
 class MortgageCalculatorApp(MDApp):
     title = "Mortgage Calculator"
@@ -507,30 +601,30 @@ class MortgageCalculatorApp(MDApp):
         months = self.screen.ids.months.text
         interest = self.screen.ids.interest.text
         payment_type = self.screen.ids.payment_type.text
-        print(start_date+" "+loan+" "+months+" "+interest+" "+payment_type)
+        print(start_date + " " + loan + " " + months + " " + interest + " " + payment_type)
         # convert to date object, float, and so on
         start_date = datetime.datetime.strptime(self.screen.ids.start_date.text, "%d-%m-%Y").date()
         loan = float(loan)
         months = int(months)
         interest = float(interest)
 
-        #annuity payment
-        #https://temabiz.com/finterminy/ap-formula-i-raschet-annuitetnogo-platezha.html
-        percent = interest/100/12
-        monthly_payment = loan*(percent+percent/((1+percent)**months-1))
-        print(monthly_payment)
+        # annuity payment
+        # https://temabiz.com/finterminy/ap-formula-i-raschet-annuitetnogo-platezha.html
+        percent = interest / 100 / 12
+        monthly_payment = loan * (percent + percent / ((1 + percent) ** months - 1))
+        # print(monthly_payment)
 
         debt_end_month = loan
         for i in range(0, months):
-            repayment_of_interest = debt_end_month*percent
-            repayment_of_loan_body = monthly_payment-repayment_of_interest
-            debt_end_month = debt_end_month-repayment_of_loan_body
-            print(monthly_payment, repayment_of_interest, repayment_of_loan_body, debt_end_month)
+            repayment_of_interest = debt_end_month * percent
+            repayment_of_loan_body = monthly_payment - repayment_of_interest
+            debt_end_month = debt_end_month - repayment_of_loan_body
+            # print(monthly_payment, repayment_of_interest, repayment_of_loan_body, debt_end_month)
 
         total_amount_of_payments = monthly_payment * months
-        overpayment_loan = total_amount_of_payments-loan
-        effective_interest_rate = ((total_amount_of_payments/loan-1)/(months/12))*100
-        print(total_amount_of_payments, overpayment_loan, effective_interest_rate)
+        overpayment_loan = total_amount_of_payments - loan
+        effective_interest_rate = ((total_amount_of_payments / loan - 1) / (months / 12)) * 100
+        # print(total_amount_of_payments, overpayment_loan, effective_interest_rate)
 
         # https://kivymd.readthedocs.io/en/latest/themes/color-definitions/
         self.screen.ids.table_list.clear_widgets()
@@ -586,10 +680,14 @@ class MortgageCalculatorApp(MDApp):
         #         Rectangle(pos=(r() * wid.width + wid.x,
         #                        r() * wid.height + wid.y), size=(20, 20))
 
-        show_canvas_stress(self.screen.ids.graph)
+        # show_canvas_stress(self.screen.ids.graph)
         show_canvas_stress(self.screen.ids.chart)
 
-        draw_graph(self.screen.ids.graph)
+        self.screen.ids.graph.canvas.clear()
+        draw_graph(self.screen.ids.graph, start_date, loan, months, interest, payment_type)
+
+        self.screen.ids.chart.canvas.clear()
+        draw_chart(self.screen.ids.chart, total_amount_of_payments, loan)
 
         pass
 
