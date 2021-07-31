@@ -29,6 +29,10 @@ from random import random as r
 from kivymd.uix.datatables import MDDataTable
 from kivy.metrics import dp
 
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.dialog import MDDialog
+
+
 KV = '''
 #https://stackoverflow.com/questions/65698145/kivymd-tab-name-containing-icons-and-text
 # this import will prevent disappear tabs through some clicks on them)))
@@ -101,29 +105,29 @@ Screen:
                         left_action_items: [['menu', lambda x: nav_drawer.set_state("open")]]
                         right_action_items: [["star-outline", lambda x: app.on_star_click()]]
                         md_bg_color: 0, 0, 0, 1
-                        
+
                     MDTabs:
                         id: tabs
                         on_tab_switch: app.on_tab_switch(*args)                        
                         height: "48dp"
                         tab_indicator_anim: False
                         background_color: 0.1, 0.1, 0.1, 1
-                    
+
                         Tab:
                             id: tab1
                             name: 'tab1'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['calculator-variant']}[/size][/font] Input"
-                            
+
                             BoxLayout:
                                 orientation: 'vertical'
                                 padding: "10dp"   
-                                
+
                                 BoxLayout:
                                     orientation: 'horizontal'                               
-                                    
+
                                     MDIconButton:
                                         icon: "calendar-month"
-                                        
+
                                     MDTextField:
                                         id: start_date
                                         hint_text: "Start date"
@@ -131,14 +135,15 @@ Screen:
                                         color_mode: 'custom' 
                                         line_color_focus: 0,0,0,1
                                         text_color: 0,0,0,1
-                                        current_hint_text_color: 0,0,0,1                                      
-                                
+                                        current_hint_text_color: 0,0,0,1
+                                        text_hint_color: 0,0,1,1                                 
+
                                 BoxLayout:
                                     orientation: 'horizontal'                         
-                                    
+
                                     MDIconButton:
                                         icon: "cash"
-                                        
+
                                     MDTextField:
                                         id: loan
                                         hint_text: "Loan"
@@ -146,13 +151,13 @@ Screen:
                                         line_color_focus: 0,0,0,1
                                         text_color: 0,0,0,1
                                         current_hint_text_color: 0,0,0,1
-                                    
+
                                 BoxLayout:
                                     orientation: 'horizontal'                                
-                                    
+
                                     MDIconButton:
                                         icon: "clock-time-five-outline"
-                                            
+
                                     MDTextField:
                                         id: months
                                         hint_text: "Months"                                        
@@ -161,13 +166,13 @@ Screen:
                                         text_color: 0,0,0,1
                                         current_hint_text_color: 0,0,0,1
 
-                                    
+
                                 BoxLayout:
                                     orientation: 'horizontal'                                 
-                                    
+
                                     MDIconButton:
                                         icon: "bank"
-                                            
+
                                     MDTextField:
                                         id: interest
                                         hint_text: "Interest, %"
@@ -175,7 +180,7 @@ Screen:
                                         line_color_focus: 0,0,0,1
                                         text_color: 0,0,0,1
                                         current_hint_text_color: 0,0,0,1
-                                    
+
                                     MDTextField:
                                         id: payment_type
                                         hint_text: "Payment type"
@@ -184,31 +189,26 @@ Screen:
                                         line_color_focus: 0,0,0,1
                                         text_color: 0,0,0,1
                                         current_hint_text_color: 0,0,0,1
-                                
+
                                 MDSeparator:
                                     height: "1dp"
-                                    
-                                
+
+
                                 BoxLayout:
                                     orientation: 'horizontal'
-                                    
+
                                     AnchorLayout:
                                         anchor_x: 'center'
-                                
+
                                         MDRectangleFlatIconButton:
                                             icon: "android"
                                             text: "BUTTON1"
-                                            theme_text_color: "Custom"
-                                            text_color: 1, 1, 1, 1
-                                            line_color: 0, 0, 0, 1
-                                            icon_color: 1, 0, 0, 1
-                                            md_bg_color: 0.1, 0.1, 0.1, 1
                                             adaptive_width: True
                                             on_release: app.calc_table(*args)
-                                    
+
                                     AnchorLayout:
                                         anchor_x: 'center'
-                                    
+
                                         MDRectangleFlatIconButton:
                                             icon: "android"
                                             text: "BUTTON2"
@@ -216,182 +216,199 @@ Screen:
                                             text_color: 1, 1, 1, 1
                                             line_color: 0, 0, 0, 1
                                             icon_color: 1, 0, 0, 1
-                                            md_bg_color: 0.1, 0.1, 0.1, 1
-                                    
+                                            md_bg_color: 0, 0, 0, 1
+
                                     AnchorLayout:
                                         anchor_x: 'center'
-                                        
+
                                         Button:
                                             text: "Test Ok"
                                             size_hint_y: .5
                                             background_color: (0.1, 0.1, 0.1, 1.0)
-                                 
-                        
+
+
                         Tab:
                             id: tab2
                             name: 'tab2'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['table-large']}[/size][/font] Table"
-                            
+
                             ScrollView:
-                            
+
                                 BoxLayout:
                                     orientation: 'vertical'
                                     id: calc_data_table
-                                                                        
+
+                            MDFloatingActionButton:
+                                icon: "email-outline"
+                                pos: 20, 20
+                                on_release: app.show_confirmation_dialog()
+
                         Tab:
                             id: tab3
                             name: 'tab3'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-areaspline']}[/size][/font] Graph"
-                              
+
                             BoxLayout:
                                 orientation: 'vertical'
                                 padding: "10dp"
-                                
-                                
+
+
                                 BoxLayout:
                                     orientation: 'vertical'
                                     padding: "10dp"
                                     size_hint_x: 1
                                     size_hint_y: None
                                     height: 50
-                                       
+
                                     canvas:
                                         Color:
                                             rgba: 0.2, 0.2, 0.2, 0.1
                                         Rectangle:
                                             size: self.size
                                             pos: self.pos
-                                                                         
+
                                     MDLabel:
                                         text: "Payment"
                                         halign: "center"
                                         font_style: "H5"
                                         height: "48dp"
-                                    
+
                                 BoxLayout:
                                     orientation: 'vertical'
                                     padding: "10dp"
                                     id: graph
-                                    
+
                                     canvas:
                                         Color:
                                             rgba: 1, 1, 1, 1
                                         Rectangle:
                                             size: self.size
                                             pos: self.pos   
-                                
+
                                 BoxLayout:
                                     orientation: 'horizontal'
                                     padding: "10dp"
                                     size_hint_x: 1
                                     size_hint_y: None
                                     height: 50  
-                                    
+
                                     MDIcon:
                                         icon: "checkbox-blank"
                                         halign: "right"
                                         color: 0, 0, 1, 1
-                                        
+
                                     MDLabel:
                                         text: "Interest"
                                         halign: "left"
                                         font_style: "H6"
                                         height: "48dp"
-                                        
+
                                     MDIcon:
                                         icon: "checkbox-blank"
                                         halign: "right"
                                         color: 1, 0, 0, 1
-                                        
+
                                     MDLabel:
                                         text: "Principal"
                                         halign: "left"
                                         font_style: "H6"
-                                        height: "48dp"   
-                        
+                                        height: "48dp"
+
                         Tab:
                             id: tab4
                             name: 'tab4'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-pie']}[/size][/font] Chart"
-                            
+
                             BoxLayout:
                                 orientation: 'vertical'
                                 padding: "10dp"
-                                
-                                
+
+
                                 BoxLayout:
                                     orientation: 'vertical'
                                     padding: "10dp"
                                     size_hint_x: 1
                                     size_hint_y: None
                                     height: 50
-                                       
+
                                     canvas:
                                         Color:
                                             rgba: 0.2, 0.2, 0.2, 0.1
                                         Rectangle:
                                             size: self.size
                                             pos: self.pos
-                                                                         
+
                                     MDLabel:
                                         text: "Total payments"
                                         halign: "center"
                                         font_style: "H5"
                                         height: "48dp"
-                                    
+
                                 BoxLayout:
                                     orientation: 'vertical'
                                     padding: "10dp"
                                     id: chart
-                                    
+
                                     canvas:
                                         Color:
                                             rgba: 1, 1, 1, .6
                                         Rectangle:
                                             size: self.size
                                             pos: self.pos
-                                
+
                                 BoxLayout:
                                     orientation: 'horizontal'
                                     padding: "10dp"
                                     size_hint_x: 1
                                     size_hint_y: None
                                     height: 50  
-                                    
+
                                     MDIcon:
                                         icon: "checkbox-blank"
                                         halign: "right"
                                         color: 0, 0, 1, 1
-                                        
+
                                     MDLabel:
                                         text: "Interest"
                                         halign: "left"
                                         font_style: "H6"
                                         height: "48dp"
-                                        
+
                                     MDIcon:
                                         icon: "checkbox-blank"
                                         halign: "right"
                                         color: 1, 0, 0, 1
-                                        
+
                                     MDLabel:
                                         text: "Principal"
                                         halign: "left"
                                         font_style: "H6"
                                         height: "48dp"
-                        
-                        
-                        
+
+
+
                         Tab:
                             id: tab5
                             name: 'tab5'
                             text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['book-open-variant']}[/size][/font] Sum"
-                    
+
         MDNavigationDrawer:
             id: nav_drawer
 
             ContentNavigationDrawer:
                 id: content_drawer
+
+<ContentDialogSend>
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "120dp"
+
+    MDTextField:
+        hint_text: "City"
+
+    MDTextField:
+        hint_text: "Street"
 '''
 
 
@@ -417,6 +434,10 @@ class DrawerList(ThemableBehavior, MDList):
 
 
 class Tab(MDFloatLayout, MDTabsBase):
+    pass
+
+
+class ContentDialogSend(BoxLayout):
     pass
 
 
@@ -487,9 +508,13 @@ def draw_chart(wid, total_amount_of_payments, loan):
 class MortgageCalculatorApp(MDApp):
     title = "Mortgage Calculator"
     by_who = "author Oleg Shpagin"
+    dialog = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        self.data_for_calc_is_changed = True
+
         self.screen = Builder.load_string(KV)
         #https://kivymd.readthedocs.io/en/latest/components/menu/?highlight=MDDropDownItem#center-position
         #menu_items = [{"icon": "git", "text": f"Item {i}"} for i in range(5)]
@@ -562,16 +587,24 @@ class MortgageCalculatorApp(MDApp):
         #         )
         #     )
 
-    def on_tab_switch(self, instance_tabs, instance_tab, instance_tab_label, tab_text):
+    def on_tab_switch(self, *args):
+        # def on_tab_switch(self, instance_tabs, instance_tab, instance_tabs_label, tab_text):
         '''Called when switching tabs.
 
-        :type instance_tabs: <kivymd.uix.tab.MDTabs object>;
-        :param instance_tab: <__main__.Tab object>;
-        :param instance_tab_label: <kivymd.uix.tab.MDTabsLabel object>;
-        :param tab_text: text or name icon of tab;
-        '''
-
-        print("tab clicked! " + tab_text)
+                :type instance_tabs: <kivymd.uix.tab.MDTabs object>;
+                :param instance_tab: <__main__.Tab object>;
+                :param instance_tab_label: <kivymd.uix.tab.MDTabsLabel object>;
+                :param tab_text: text or name icon of tab;
+                '''
+        # print(instance_tab.name + " : " + tab_text)
+        # print(args)
+        # print("tab clicked!" + instance_tab.ids.label.text)
+        ############# instance_tab.ids.label.text = tab_text
+        # print(instance_tab.ids.label.text)
+        if self.data_for_calc_is_changed:
+            self.calc_table(self, args)
+            self.data_for_calc_is_changed = False
+        pass
 
     def on_star_click(self):
         print("star clicked!")
@@ -640,6 +673,23 @@ class MortgageCalculatorApp(MDApp):
         self.screen.ids.calc_data_table.add_widget(data_tables)
 
         pass
+
+    def show_confirmation_dialog(self):
+        if not self.dialog:
+            self.dialog = MDDialog(
+                title="Share it:",
+                type="custom",
+                content_cls=ContentDialogSend(),
+                buttons=[
+                    MDFlatButton(
+                        text="CANCEL", text_color=self.theme_cls.primary_color
+                    ),
+                    MDFlatButton(
+                        text="SEND", text_color=self.theme_cls.primary_color
+                    ),
+                ],
+            )
+        self.dialog.open()
 
 
 MortgageCalculatorApp().run()
