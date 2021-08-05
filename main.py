@@ -217,6 +217,7 @@ Screen:
                                             line_color: 0, 0, 0, 1
                                             icon_color: 1, 0, 0, 1
                                             md_bg_color: 0, 0, 0, 1
+                                            on_release: app.share_it(*args)
 
                                     AnchorLayout:
                                         anchor_x: 'center'
@@ -225,6 +226,55 @@ Screen:
                                             text: "Test Ok"
                                             size_hint_y: .5
                                             background_color: (0.1, 0.1, 0.1, 1.0)
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+
+                                    MDLabel:
+                                        text: "Payment"
+
+                                    MDTextField:
+                                        id: payment_label
+                                        hint_text: ""
+                                        disabled: True
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+
+                                    MDLabel:
+                                        text: "Total interest"
+
+                                    MDTextField:
+                                        id: overpayment_loan_label
+                                        hint_text: ""
+                                        disabled: True
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+
+                                    MDLabel:
+                                        text: "Total payments"
+
+                                    MDTextField:
+                                        id: total_amount_of_payments_label
+                                        hint_text: ""
+                                        disabled: True
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+
+                                    MDLabel:
+                                        text: "Effective %"
+
+                                    MDTextField:
+                                        id: effective_interest_rate_label
+                                        hint_text: ""
+                                        disabled: True
+                                        text_hint_color:[0,0,1,1]
 
 
                         Tab:
@@ -505,6 +555,30 @@ def draw_chart(wid, total_amount_of_payments, loan):
         Ellipse(pos=(wid.x+center_x, wid.y+center_y), size=(circle_width, circle_width), angle_start=0, angle_end=360-int(interest_chart))
 
 
+# https://pypi.org/project/kivy-ios/
+# https://github.com/kivy/kivy-ios/issues/411
+# -----------------
+# https://stackoverflow.com/questions/38983649/kivy-android-share-image
+# https://stackoverflow.com/questions/63322944/how-to-use-share-button-to-share-content-of-my-app
+# Native method for Android.
+def share(title, text):
+    from kivy import platform
+
+    print(platform)
+    if platform == 'android':
+        from jnius import autoclass
+
+        PythonActivity = autoclass('org.kivy.android.PythonActivity')
+        Intent = autoclass('android.content.Intent')
+        String = autoclass('java.lang.String')
+        intent = Intent()
+        intent.setAction(Intent.ACTION_SEND)
+        intent.putExtra(Intent.EXTRA_TEXT, String('{}'.format(text)))
+        intent.setType('text/plain')
+        chooser = Intent.createChooser(intent, String(title))
+        PythonActivity.mActivity.startActivity(chooser)
+
+
 class MortgageCalculatorApp(MDApp):
     title = "Mortgage Calculator"
     by_who = "author Oleg Shpagin"
@@ -554,10 +628,27 @@ class MortgageCalculatorApp(MDApp):
 
     def on_start(self):
         self.screen.ids.start_date.text = datetime.date.today().strftime("%d-%m-%Y")
-        self.screen.ids.loan.text = "5000000"
-        self.screen.ids.months.text = "120"
-        self.screen.ids.interest.text = "9.5"
+        self.screen.ids.loan.text = "50000"
+        self.screen.ids.months.text = "12"
+        self.screen.ids.interest.text = "22"
         self.screen.ids.payment_type.text = "annuity"
+
+        loan = self.screen.ids.loan.text
+        months = self.screen.ids.months.text
+        interest = self.screen.ids.interest.text
+        loan = float(loan)
+        months = int(months)
+        interest = float(interest)
+        percent = interest / 100 / 12
+        monthly_payment = loan * (percent + percent / ((1 + percent) ** months - 1))
+        total_amount_of_payments = monthly_payment * months
+        overpayment_loan = total_amount_of_payments - loan
+        effective_interest_rate = ((total_amount_of_payments / loan - 1) / (months / 12)) * 100
+
+        self.screen.ids.payment_label.text = str(round(monthly_payment, 2))
+        self.screen.ids.total_amount_of_payments_label.text = str(round(total_amount_of_payments, 2))
+        self.screen.ids.overpayment_loan_label.text = str(round(overpayment_loan, 2))
+        self.screen.ids.effective_interest_rate_label.text = str(round(effective_interest_rate, 2))
 
         icons_item_menu_lines = {
             "account-cowboy-hat": "About author",
@@ -690,6 +781,10 @@ class MortgageCalculatorApp(MDApp):
                 ],
             )
         self.dialog.open()
+
+
+    def share_it(self, *args):
+        share("title_share", "this content to share!")
 
 
 MortgageCalculatorApp().run()
