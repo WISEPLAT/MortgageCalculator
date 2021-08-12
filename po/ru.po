@@ -1,0 +1,172 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-12 08:29+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Oleg Shpagin <info@wiseplat.org>\n"
+"Language-Team: Oleg Shpagin <info@wiseplat.org>\n"
+"Language: Russian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: main.py:476
+msgid "Date"
+msgstr "Дата"
+
+#: main.py:477
+msgid "Payment"
+msgstr "Платеж"
+
+#: main.py:478 app_interface.kv:153 app_interface.kv:294 app_interface.kv:365
+#: app_interface.kv:421
+msgid "Interest"
+msgstr "Процент"
+
+#: main.py:479 app_interface.kv:305 app_interface.kv:376
+msgid "Principal"
+msgstr "Кредит"
+
+#: main.py:480
+msgid "Debt"
+msgstr "Долг"
+
+#: app_interface.kv:39 app_interface.kv:71
+msgid "Mortgage Calculator"
+msgstr "Калькулятор ипотеки"
+
+#: app_interface.kv:45
+msgid "author Oleg Shpagin"
+msgstr "автор Шпагин Олег"
+
+#: app_interface.kv:87
+msgid "Input"
+msgstr "Ввод"
+
+#: app_interface.kv:101 app_interface.kv:444
+msgid "Start date"
+msgstr "Дата начала"
+
+#: app_interface.kv:118
+msgid "Loan"
+msgstr "Кредит"
+
+#: app_interface.kv:135
+msgid "Months"
+msgstr "Месяцев"
+
+#: app_interface.kv:164
+msgid "Payment type"
+msgstr "Тип платежа"
+
+#: app_interface.kv:177 app_interface.kv:407
+msgid "Monthly payment"
+msgstr "Ежемесячный платеж"
+
+#: app_interface.kv:189 app_interface.kv:430
+msgid "Total interest"
+msgstr "Переплата по процентам"
+
+#: app_interface.kv:201 app_interface.kv:490
+msgid "Total payments"
+msgstr "Общая сумма выплат"
+
+#: app_interface.kv:213 app_interface.kv:476
+msgid "Effective"
+msgstr "Эффективный"
+
+#: app_interface.kv:225
+msgid "Table"
+msgstr "Расчёт"
+
+#: app_interface.kv:242
+msgid "Graph"
+msgstr "График"
+
+#: app_interface.kv:264
+msgid "Graph payments"
+msgstr "График платежей"
+
+#: app_interface.kv:313
+msgid "Chart"
+msgstr "Диаграмма"
+
+#: app_interface.kv:335
+msgid "Chart payments"
+msgstr "Диаграмма платежей"
+
+#: app_interface.kv:386
+msgid "Sum"
+msgstr "Итого"
+
+#: app_interface.kv:398
+msgid "Property value"
+msgstr "Стоимость объекта"
+
+#: app_interface.kv:453
+msgid "Payments type"
+msgstr "Тип платежа"
+
+#: app_interface.kv:467
+msgid "End date"
+msgstr "Дата окончания"
+
+#: app_interface.kv:499
+msgid "Term length"
+msgstr "Срок кредита"
+
+#: app_interface.kv:522
+msgid "City"
+msgstr "Город"
+
+#: app_interface.kv:525
+msgid "Street"
+msgstr "Улица"
+
+#~ msgid "My YouTube"
+#~ msgstr "Мой Ютуб"
+
+#~ msgid "Source code"
+#~ msgstr "Исходный код"
+
+#~ msgid "Share app"
+#~ msgstr "Поделиться"
+
+#~ msgid "Dark/Light"
+#~ msgstr "Темная/Светлая"
+
+#~ msgid ""
+#~ "Universal mortgage calculator for all banks. Calculation of the monthly "
+#~ "payment. A visual repayment chart. Calculation of the overpayment on the "
+#~ "loan."
+#~ msgstr ""
+#~ "Универсальный калькулятор ипотеки для всех банков.Расчет ежемесячного "
+#~ "платежа. Наглядный график погашения.Рассчет переплаты по кредиту."
+
+#~ msgid "Copy Link"
+#~ msgstr "Скопировать ссылку"
+
+#~ msgid "Link copied to Clipboard"
+#~ msgstr "Ссылка скопирована в буфер обмена"
+
+#~ msgid "annuity"
+#~ msgstr "аннуитетный"
+
+#~ msgid "differentiated"
+#~ msgstr "дифференцированный"
+
+#~ msgid "About author"
+#~ msgstr "Об авторе"
+
+#~ msgid "Donate author"
+#~ msgstr "Поддержать автора"
+
+#~ msgid "Interests"
+#~ msgstr "Проценты"

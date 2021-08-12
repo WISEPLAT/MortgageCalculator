@@ -1,0 +1,131 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-12 08:29+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Oleg Shpagin <info@wiseplat.org>\n"
+"Language-Team: Oleg Shpagin <info@wiseplat.org>\n"
+"Language: English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: main.py:476
+msgid "Date"
+msgstr ""
+
+#: main.py:477
+msgid "Payment"
+msgstr ""
+
+#: main.py:478 app_interface.kv:153 app_interface.kv:294 app_interface.kv:365
+#: app_interface.kv:421
+msgid "Interest"
+msgstr ""
+
+#: main.py:479 app_interface.kv:305 app_interface.kv:376
+msgid "Principal"
+msgstr ""
+
+#: main.py:480
+msgid "Debt"
+msgstr ""
+
+#: app_interface.kv:39 app_interface.kv:71
+msgid "Mortgage Calculator"
+msgstr ""
+
+#: app_interface.kv:45
+msgid "author Oleg Shpagin"
+msgstr ""
+
+#: app_interface.kv:87
+msgid "Input"
+msgstr ""
+
+#: app_interface.kv:101 app_interface.kv:444
+msgid "Start date"
+msgstr ""
+
+#: app_interface.kv:118
+msgid "Loan"
+msgstr ""
+
+#: app_interface.kv:135
+msgid "Months"
+msgstr ""
+
+#: app_interface.kv:164
+msgid "Payment type"
+msgstr ""
+
+#: app_interface.kv:177 app_interface.kv:407
+msgid "Monthly payment"
+msgstr ""
+
+#: app_interface.kv:189 app_interface.kv:430
+msgid "Total interest"
+msgstr ""
+
+#: app_interface.kv:201 app_interface.kv:490
+msgid "Total payments"
+msgstr ""
+
+#: app_interface.kv:213 app_interface.kv:476
+msgid "Effective"
+msgstr ""
+
+#: app_interface.kv:225
+msgid "Table"
+msgstr ""
+
+#: app_interface.kv:242
+msgid "Graph"
+msgstr ""
+
+#: app_interface.kv:264
+msgid "Graph payments"
+msgstr ""
+
+#: app_interface.kv:313
+msgid "Chart"
+msgstr ""
+
+#: app_interface.kv:335
+msgid "Chart payments"
+msgstr ""
+
+#: app_interface.kv:386
+msgid "Sum"
+msgstr ""
+
+#: app_interface.kv:398
+msgid "Property value"
+msgstr ""
+
+#: app_interface.kv:453
+msgid "Payments type"
+msgstr ""
+
+#: app_interface.kv:467
+msgid "End date"
+msgstr ""
+
+#: app_interface.kv:499
+msgid "Term length"
+msgstr ""
+
+#: app_interface.kv:522
+msgid "City"
+msgstr ""
+
+#: app_interface.kv:525
+msgid "Street"
+msgstr ""

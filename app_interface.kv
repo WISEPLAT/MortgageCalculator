@@ -1,0 +1,525 @@
+# https://stackoverflow.com/questions/65698145/kivymd-tab-name-containing-icons-and-text
+# this import will prevent disappear tabs through some clicks on them)))
+#:import md_icons kivymd.icon_definitions.md_icons
+#:import fonts kivymd.font_definitions.fonts
+
+# https://github.com/tito/kivy-gettext-example
+# this import for multilingual support
+#:import tr __main__.tr
+
+# Menu item in the DrawerList list.
+<ItemDrawer>:
+    theme_text_color: "Custom"
+    on_release: self.parent.set_color_item(self)
+
+    IconLeftWidget:
+        id: icon
+        icon: root.icon
+        theme_text_color: "Custom"
+        text_color: root.text_color
+
+
+<ContentNavigationDrawer>:
+    orientation: "vertical"
+    padding: "8dp"
+    spacing: "8dp"
+
+    AnchorLayout:
+        anchor_x: "left"
+        size_hint_y: None
+        height: avatar.height
+
+        Image:
+            id: avatar
+            size_hint: None, None
+            size: "56dp", "56dp"
+            source: "data/logo/kivy-icon-256.png"
+
+    MDLabel:
+        text: tr._('Mortgage Calculator') #app.title
+        font_style: "Button"
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDLabel:
+        text: tr._('author Oleg Shpagin') #app.by_who
+        font_style: "Caption"
+        size_hint_y: None
+        height: self.texture_size[1]
+
+
+
+    ScrollView:
+
+        DrawerList:
+            id: md_list
+
+
+
+Screen:
+
+    MDNavigationLayout:
+
+        ScreenManager:
+
+            Screen:
+
+                BoxLayout:
+                    orientation: 'vertical'
+
+                    MDToolbar:
+                        title: tr._('Mortgage Calculator') #app.title
+                        elevation: 10
+                        left_action_items: [['menu', lambda x: nav_drawer.set_state("open")]]
+                        right_action_items: [["star-outline", lambda x: app.on_star_click()]]
+                        md_bg_color: 0, 0, 0, 1
+
+                    MDTabs:
+                        id: tabs
+                        on_tab_switch: app.on_tab_switch(*args)
+                        height: "48dp"
+                        tab_indicator_anim: False
+                        background_color: 0.1, 0.1, 0.1, 1
+
+                        Tab:
+                            id: tab1
+                            name: 'tab1'
+                            text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['calculator-variant']}[/size][/font] "+tr._('Input')
+
+                            BoxLayout:
+                                orientation: 'vertical'
+                                padding: "10dp"
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+
+                                    MDIconButton:
+                                        icon: "calendar-month"
+
+                                    MDTextField:
+                                        id: start_date
+                                        hint_text: tr._('Start date')
+                                        on_focus: if self.focus: app.date_dialog.open()
+                                        color_mode: 'custom'
+                                        line_color_focus: 0,0,0,1
+                                        text_color: 0,0,0,1
+                                        current_hint_text_color: 0,0,0,1
+                                        text_hint_color: 0,0,1,1
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+
+                                    MDIconButton:
+                                        icon: "cash"
+
+                                    MDTextField:
+                                        id: loan
+                                        name: 'loan'
+                                        hint_text: tr._('Loan')
+                                        color_mode: 'custom'
+                                        line_color_focus: 0,0,0,1
+                                        text_color: 0,0,0,1
+                                        current_hint_text_color: 0,0,0,1
+                                        input_filter: 'float'
+                                        helper_text_mode: "on_focus"
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+
+                                    MDIconButton:
+                                        icon: "clock-time-five-outline"
+
+                                    MDTextField:
+                                        id: months
+                                        name: 'months'
+                                        hint_text: tr._('Months')
+                                        color_mode: 'custom'
+                                        line_color_focus: 0,0,0,1
+                                        text_color: 0,0,0,1
+                                        current_hint_text_color: 0,0,0,1
+                                        input_filter: 'int'
+                                        helper_text_mode: "on_focus"
+
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+
+                                    MDIconButton:
+                                        icon: "bank"
+
+                                    MDTextField:
+                                        id: interest
+                                        name: 'interest'
+                                        hint_text: tr._('Interest')+", %"
+                                        color_mode: 'custom'
+                                        line_color_focus: 0,0,0,1
+                                        text_color: 0,0,0,1
+                                        current_hint_text_color: 0,0,0,1
+                                        input_filter: 'float'
+                                        helper_text_mode: "on_focus"
+
+                                    MDTextField:
+                                        id: payment_type
+                                        name: 'payment_type'
+                                        hint_text: tr._('Payment type')
+                                        on_focus: if self.focus: app.menu.open()
+                                        color_mode: 'custom'
+                                        line_color_focus: 0,0,0,1
+                                        text_color: 0,0,0,1
+                                        current_hint_text_color: 0,0,0,1
+
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+
+                                    MDLabel:
+                                        text: tr._('Monthly payment')
+
+                                    MDTextField:
+                                        id: payment_label
+                                        hint_text: ""
+                                        disabled: True
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+
+                                    MDLabel:
+                                        text: tr._('Total interest')
+
+                                    MDTextField:
+                                        id: overpayment_loan_label
+                                        hint_text: ""
+                                        disabled: True
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+
+                                    MDLabel:
+                                        text: tr._('Total payments')
+
+                                    MDTextField:
+                                        id: total_amount_of_payments_label
+                                        hint_text: ""
+                                        disabled: True
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+
+                                    MDLabel:
+                                        text: tr._('Effective')+" %"
+
+                                    MDTextField:
+                                        id: effective_interest_rate_label
+                                        hint_text: ""
+                                        disabled: True
+                                        text_hint_color:[0,0,1,1]
+
+
+                        Tab:
+                            id: tab2
+                            name: 'tab2'
+                            text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['table-large']}[/size][/font] "+tr._('Table')
+
+                            ScrollView:
+                                BoxLayout:
+                                    orientation: 'vertical'
+                                    id: calc_data_table
+
+                            FloatLayout:
+                                MDFloatingActionButton:
+                                    icon: "email-outline"
+                                    pos: 20, 20
+                                    text_color: [1,1,1,1]
+                                    on_release: app.show_confirmation_dialog()
+
+                        Tab:
+                            id: tab3
+                            name: 'tab3'
+                            text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-areaspline']}[/size][/font] "+tr._('Graph')
+
+                            BoxLayout:
+                                orientation: 'vertical'
+                                padding: "10dp"
+
+
+                                BoxLayout:
+                                    orientation: 'vertical'
+                                    padding: "10dp"
+                                    size_hint_x: 1
+                                    size_hint_y: None
+                                    height: 50
+
+                                    canvas:
+                                        Color:
+                                            rgba: 0.2, 0.2, 0.2, 0.1
+                                        Rectangle:
+                                            size: self.size
+                                            pos: self.pos
+
+                                    MDLabel:
+                                        text: tr._('Graph payments')
+                                        halign: "center"
+                                        font_style: "H5"
+                                        height: "48dp"
+
+                                BoxLayout:
+                                    orientation: 'vertical'
+                                    padding: "10dp"
+                                    id: graph
+
+                                    canvas:
+                                        Color:
+                                            rgba: 1, 1, 1, 1
+                                        Rectangle:
+                                            size: self.size
+                                            pos: self.pos
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    size_hint_x: 1
+                                    size_hint_y: None
+                                    height: 50
+
+                                    MDIcon:
+                                        icon: "checkbox-blank"
+                                        halign: "right"
+                                        color: 0, 0, 1, 1
+
+                                    MDLabel:
+                                        text: tr._('Interest')
+                                        halign: "left"
+                                        font_style: "H6"
+                                        height: "48dp"
+
+                                    MDIcon:
+                                        icon: "checkbox-blank"
+                                        halign: "right"
+                                        color: 1, 0, 0, 1
+
+                                    MDLabel:
+                                        text: tr._('Principal')
+                                        halign: "left"
+                                        font_style: "H6"
+                                        height: "48dp"
+
+                        Tab:
+                            id: tab4
+                            name: 'tab4'
+                            text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['chart-pie']}[/size][/font] "+tr._('Chart')
+
+                            BoxLayout:
+                                orientation: 'vertical'
+                                padding: "10dp"
+
+
+                                BoxLayout:
+                                    orientation: 'vertical'
+                                    padding: "10dp"
+                                    size_hint_x: 1
+                                    size_hint_y: None
+                                    height: 50
+
+                                    canvas:
+                                        Color:
+                                            rgba: 0.2, 0.2, 0.2, 0.1
+                                        Rectangle:
+                                            size: self.size
+                                            pos: self.pos
+
+                                    MDLabel:
+                                        text: tr._('Chart payments')
+                                        halign: "center"
+                                        font_style: "H5"
+                                        height: "48dp"
+
+                                BoxLayout:
+                                    orientation: 'vertical'
+                                    padding: "10dp"
+                                    id: chart
+
+                                    canvas:
+                                        Color:
+                                            rgba: 1, 1, 1, .6
+                                        Rectangle:
+                                            size: self.size
+                                            pos: self.pos
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    size_hint_x: 1
+                                    size_hint_y: None
+                                    height: 50
+
+                                    MDIcon:
+                                        icon: "checkbox-blank"
+                                        halign: "right"
+                                        color: 0, 0, 1, 1
+
+                                    MDLabel:
+                                        text: tr._('Interest')
+                                        halign: "left"
+                                        font_style: "H6"
+                                        height: "48dp"
+
+                                    MDIcon:
+                                        icon: "checkbox-blank"
+                                        halign: "right"
+                                        color: 1, 0, 0, 1
+
+                                    MDLabel:
+                                        text: tr._('Principal')
+                                        halign: "left"
+                                        font_style: "H6"
+                                        height: "48dp"
+
+
+
+                        Tab:
+                            id: tab5
+                            name: 'tab5'
+                            text: f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons['book-open-variant']}[/size][/font] "+tr._('Sum')
+
+                            BoxLayout:
+                                orientation: 'vertical'
+                                padding: "10dp"
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    spacing: "10dp"
+
+                                    MDLabel:
+                                        text: tr._('Property value')
+                                        halign: "right"
+                                        bold: True
+
+                                    MDLabel:
+                                        id: sum_property_value_label
+                                        halign: "left"
+
+                                    MDLabel:
+                                        text: tr._('Monthly payment')
+                                        halign: "right"
+                                        bold: True
+
+                                    MDLabel:
+                                        id: sum_payment_label
+                                        halign: "left"
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    spacing: "10dp"
+
+                                    MDLabel:
+                                        text: tr._('Interest')
+                                        halign: "right"
+                                        bold: True
+
+                                    MDLabel:
+                                        id: sum_interest_label
+                                        halign: "left"
+
+                                    MDLabel:
+                                        text: tr._('Total interest')
+                                        halign: "right"
+                                        bold: True
+
+                                    MDLabel:
+                                        id: sum_overpayment_loan_label
+                                        halign: "left"
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    spacing: "10dp"
+
+                                    MDLabel:
+                                        text: tr._('Start date')
+                                        halign: "right"
+                                        bold: True
+
+                                    MDLabel:
+                                        id: sum_start_date_label
+                                        halign: "left"
+
+                                    MDLabel:
+                                        text: tr._('Payments type')
+                                        halign: "right"
+                                        bold: True
+
+                                    MDLabel:
+                                        id: sum_payments_type_label
+                                        halign: "left"
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    spacing: "10dp"
+
+                                    MDLabel:
+                                        text: tr._('End date')
+                                        halign: "right"
+                                        bold: True
+
+                                    MDLabel:
+                                        id: sum_end_date_label
+                                        halign: "left"
+
+                                    MDLabel:
+                                        text: tr._('Effective')+" %"
+                                        halign: "right"
+                                        bold: True
+
+                                    MDLabel:
+                                        id: sum_effective_interest_rate_label
+                                        halign: "left"
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    padding: "10dp"
+                                    spacing: "10dp"
+
+                                    MDLabel:
+                                        text: tr._('Total payments')
+                                        halign: "right"
+                                        bold: True
+
+                                    MDLabel:
+                                        id: sum_total_amount_of_payments_label
+                                        halign: "left"
+
+                                    MDLabel:
+                                        text: tr._('Term length')
+                                        halign: "right"
+                                        bold: True
+
+                                    MDLabel:
+                                        id: sum_term_length_label
+                                        halign: "left"
+
+
+
+        MDNavigationDrawer:
+            id: nav_drawer
+
+            ContentNavigationDrawer:
+                id: content_drawer
+
+<ContentDialogSend>
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "120dp"
+
+    MDTextField:
+        hint_text: tr._('City')
+
+    MDTextField:
+        hint_text: tr._('Street')
