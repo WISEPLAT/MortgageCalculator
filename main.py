@@ -1,7 +1,3 @@
-#pip install kivy
-#pip install kivymd
-#pip install https://github.com/kivymd/KivyMD/archive/3274d62.zip
-
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import StringProperty, ListProperty
@@ -10,11 +6,13 @@ from kivymd.app import MDApp
 from kivymd.theming import ThemableBehavior
 from kivymd.uix.list import OneLineIconListItem, MDList
 
+from kivy.uix.floatlayout import FloatLayout
 from kivymd.uix.tab import MDTabsBase
-from kivymd.uix.floatlayout import MDFloatLayout
 
 from kivymd.font_definitions import fonts
 from kivymd.icon_definitions import md_icons
+
+from kivymd.uix.label import MDLabel
 
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.clock import Clock
@@ -93,8 +91,8 @@ tr = Lang("en")
 # internationalized Kivy Application
 
 # 1) download and install! http://gnuwin32.sourceforge.net/packages/gettext.htm
-# https://sourceforge.net/projects/gnuwin32/files/gettext/0.14.4/gettext-0.14.4.exe/download?use_mirror=jztkft&download=
-# 2) Copy files from C:\Program Files (x86)\GnuWin32\bin to project folder!
+# https://mlocati.github.io/articles/gettext-iconv-windows.html
+# 2) Copy files from "C:\Program Files (x86)\gettext-iconv\bin" to project folder!
 # 3) run commands from Makefile
 
 
@@ -123,8 +121,8 @@ class DrawerList(ThemableBehavior, MDList):
         instance_item.text_color = self.theme_cls.primary_color
 
 
-class Tab(MDFloatLayout, MDTabsBase):
-    pass
+class Tab(FloatLayout, MDTabsBase):
+    '''Class implementing content for a tab.'''
 
 
 class ContentDialogSend(BoxLayout):
@@ -143,7 +141,7 @@ def next_month_date(d):
     return next_month
 
 
-#https://kivy.org/doc/stable/examples/gen__canvas__canvas_stress__py.html
+# https://kivy.org/doc/stable/examples/gen__canvas__canvas_stress__py.html
 def show_canvas_stress(wid):
     with wid.canvas:
         for x in range(10):
@@ -152,7 +150,7 @@ def show_canvas_stress(wid):
 
 
 def draw_graph(wid, start_date, loan, months, interest, payment_type):
-    #print(wid.x, wid.y)
+    # print(wid.x, wid.y)
     with wid.canvas:
         Color(.2, .2, .2, 1)
         Line(rectangle=(wid.x, wid.y, wid.width, wid.height), width=1)
@@ -169,13 +167,14 @@ def draw_graph(wid, start_date, loan, months, interest, payment_type):
         debt_end_month = debt_end_month - repayment_of_loan_body
         delta_height_interest = int(repayment_of_interest * graph_height / monthly_payment)
         delta_height_loan = int(repayment_of_loan_body * graph_height / monthly_payment)
-        #print("####: ", delta_height_loan, delta_height_loan)
-        #print(monthly_payment, repayment_of_interest, repayment_of_loan_body, debt_end_month)
+        # print("####: ", delta_height_loan, delta_height_loan)
+        # print(monthly_payment, repayment_of_interest, repayment_of_loan_body, debt_end_month)
         with wid.canvas:
             Color(1, 0, 0, 1)
             Rectangle(pos=(wid.x + int(i * delta_width), wid.y), size=(int(delta_width), delta_height_loan))
             Color(0, 0, 1, 1)
-            Rectangle(pos=(wid.x + int(i * delta_width), wid.y+delta_height_loan), size=(int(delta_width), delta_height_interest))
+            Rectangle(pos=(wid.x + int(i * delta_width), wid.y + delta_height_loan),
+                      size=(int(delta_width), delta_height_interest))
 
 
 def draw_chart(wid, total_amount_of_payments, loan):
@@ -187,12 +186,14 @@ def draw_chart(wid, total_amount_of_payments, loan):
         circle_width = wid.height
         center_x = wid.width // 2 - circle_width // 2
         center_y = 0
-    #print(wid.x, wid.y)
+    # print(wid.x, wid.y)
     with wid.canvas:
         Color(0, 0, 1, 1)
-        Ellipse(pos=(wid.x+center_x, wid.y+center_y), size=(circle_width, circle_width), angle_start=360-int(interest_chart), angle_end=360)
+        Ellipse(pos=(wid.x + center_x, wid.y + center_y), size=(circle_width, circle_width),
+                angle_start=360 - int(interest_chart), angle_end=360)
         Color(1, 0, 0, 1)
-        Ellipse(pos=(wid.x+center_x, wid.y+center_y), size=(circle_width, circle_width), angle_start=0, angle_end=360-int(interest_chart))
+        Ellipse(pos=(wid.x + center_x, wid.y + center_y), size=(circle_width, circle_width), angle_start=0,
+                angle_end=360 - int(interest_chart))
 
 
 # https://pypi.org/project/kivy-ios/
@@ -219,13 +220,15 @@ def share(title, text):
         PythonActivity.mActivity.startActivity(chooser)
 
 
-class MortgageCalculatorApp(MDApp):
-    # title = "Mortgage Calculator"
-    # by_who = "by Oleg Shpagin"
+class MortgageCalculator(MDApp):
+    #title = "Mortgage Calculator"
+    #by_who = "by Oleg Shpagin"
     dialog = None
     lang = StringProperty('en')
     data_tables = None
     current_tab = 'tab1'
+    payment_annuity = True
+    menu = None # for recreate menu on lang change
 
     def on_lang(self, instance, lang):
         print('switched')
@@ -234,12 +237,15 @@ class MortgageCalculatorApp(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        self.theme_cls.primary_palette = "Brown"
+        self.theme_cls.primary_hue = "A100"
         self.data_for_calc_is_changed = True
 
         self.screen = Builder.load_string(KV)
-        #https://kivymd.readthedocs.io/en/latest/components/menu/?highlight=MDDropDownItem#center-position
-        #menu_items = [{"icon": "git", "text": f"Item {i}"} for i in range(5)]
-        menu_items = [{"icon": "format-text-rotation-angle-up", "text": "annuity"}, {"icon": "format-text-rotation-angle-down", "text": "differentiated"}]
+        # https://kivymd.readthedocs.io/en/latest/components/menu/?highlight=MDDropDownItem#center-position
+        # menu_items = [{"icon": "git", "text": f"Item {i}"} for i in range(5)]
+        menu_items = [{"icon": "format-text-rotation-angle-up", "text": tr._('annuity')},
+                      {"icon": "format-text-rotation-angle-down", "text": tr._('differentiated')}]
         self.menu = MDDropdownMenu(
             caller=self.screen.ids.payment_type,
             items=menu_items,
@@ -248,10 +254,9 @@ class MortgageCalculatorApp(MDApp):
         )
         self.menu.bind(on_release=self.set_item)
 
-        #https://kivymd.readthedocs.io/en/latest/components/pickers/?highlight=date%20picker#
+        # https://kivymd.readthedocs.io/en/latest/components/pickers/?highlight=date%20picker#
         self.date_dialog = MDDatePicker(
             callback=self.get_date,
-            background_color=(0.1, 0.1, 0.1, 1.0),
         )
 
         self.screen.ids.loan.bind(
@@ -268,6 +273,23 @@ class MortgageCalculatorApp(MDApp):
             on_touch_down=self.validate_on_nums_input,
             focus=self.on_focus,
         )
+
+    #https://kivymd.readthedocs.io/en/latest/components/menu/?highlight=MDDropdownMenu#create-submenu
+    def update_menu(self):
+        self.menu = None
+        menu_items = [{"icon": "format-text-rotation-angle-up", "text": tr._('annuity')},
+                      {"icon": "format-text-rotation-angle-down", "text": tr._('differentiated')}]
+        self.menu = MDDropdownMenu(
+            caller=self.screen.ids.payment_type,
+            items=menu_items,
+            position="auto",
+            width_mult=4,
+        )
+        self.menu.bind(on_release=self.set_item)
+        if self.payment_annuity:
+            self.screen.ids.payment_type.text = tr._('annuity')
+        else:
+            self.screen.ids.payment_type.text = tr._('differentiated')
 
     def on_focus(self, instance, value):
         if value:
@@ -311,6 +333,16 @@ class MortgageCalculatorApp(MDApp):
         def set_item(interval):
             self.screen.ids.payment_type.text = instance_menu_item.text
             instance_menu.dismiss()
+            before_change = self.payment_annuity
+            if tr._(self.screen.ids.payment_type.text) == tr._('annuity'):
+                self.payment_annuity = True
+            else:
+                self.payment_annuity = False
+            print(self.payment_annuity)
+            if before_change != self.payment_annuity:
+                print("value is changed for payment type")
+                self.calc_1st_screen()
+                self.data_for_calc_is_changed = True
 
         Clock.schedule_once(set_item, 0.5)
 
@@ -326,6 +358,8 @@ class MortgageCalculatorApp(MDApp):
         print("After: ", date, self.data_for_calc_is_changed, pre_start_date == date)
 
     def build(self):
+        # self.theme_cls.primary_palette = "Brown"
+        # self.theme_cls.primary_hue = "A100"
         self.theme_cls.theme_style = "Light"  # "Dark"  # "Light"
         # return Builder.load_string(KV)
         return self.screen
@@ -338,12 +372,34 @@ class MortgageCalculatorApp(MDApp):
         months = int(months)
         interest = float(interest)
         percent = interest / 100 / 12
-        monthly_payment = loan * (percent + percent / ((1 + percent) ** months - 1))
-        total_amount_of_payments = monthly_payment * months
-        overpayment_loan = total_amount_of_payments - loan
-        effective_interest_rate = ((total_amount_of_payments / loan - 1) / (months / 12)) * 100
 
-        self.screen.ids.payment_label.text = str(round(monthly_payment, 2))
+        if self.payment_annuity:
+            monthly_payment = loan * (percent + percent / ((1 + percent) ** months - 1))
+            total_amount_of_payments = monthly_payment * months
+            overpayment_loan = total_amount_of_payments - loan
+            effective_interest_rate = ((total_amount_of_payments / loan - 1) / (months / 12)) * 100
+            self.screen.ids.payment_label.text = str(round(monthly_payment, 2))
+        else:
+            repayment_of_interest = loan * percent
+            repayment_of_loan_body = loan / months
+            max_monthly_payment = repayment_of_interest + repayment_of_loan_body
+
+            total_amount_of_payments = 0
+            overpayment_loan = 0
+
+            debt_end_month = loan
+            for i in range(0, months):
+                repayment_of_interest = debt_end_month * percent
+                debt_end_month = debt_end_month - repayment_of_loan_body
+                monthly_payment = repayment_of_interest + repayment_of_loan_body
+                total_amount_of_payments += monthly_payment
+                overpayment_loan += repayment_of_interest
+            min_monthly_payment = monthly_payment
+
+            effective_interest_rate = ((total_amount_of_payments / loan - 1) / (months / 12)) * 100
+            self.screen.ids.payment_label.text = str(round(min_monthly_payment, 2)) + " ... " + str(round(max_monthly_payment, 2))
+
+        #self.screen.ids.payment_label.text = str(round(monthly_payment, 2))
         self.screen.ids.total_amount_of_payments_label.text = str(round(total_amount_of_payments, 2))
         self.screen.ids.overpayment_loan_label.text = str(round(overpayment_loan, 2))
         self.screen.ids.effective_interest_rate_label.text = str(round(effective_interest_rate, 2))
@@ -353,19 +409,20 @@ class MortgageCalculatorApp(MDApp):
         self.screen.ids.loan.text = "50000"
         self.screen.ids.months.text = "12"
         self.screen.ids.interest.text = "22"
-        self.screen.ids.payment_type.text = "annuity"
+        #self.screen.ids.payment_type.text = "annuity"
 
         self.calc_1st_screen()
+        # icons names you can get here: https://materialdesignicons.com/
         icons_item_menu_lines = {
             "account-cowboy-hat": "About author",
             "youtube": "My YouTube",
             "coffee": "Donate author",
             "github": "Source code",
-            "share-variant": "Share app",  #air-horn
+            "share-variant": "Share app",  # air-horn
             "shield-sun": "Dark/Light",
         }
         icons_item_menu_tabs = {
-            "calculator-variant": "Input",  #ab-testing
+            "calculator-variant": "Input",  # ab-testing
             "table-large": "Table",
             "chart-areaspline": "Graph",
             "chart-pie": "Chart",  # chart-arc
@@ -383,6 +440,21 @@ class MortgageCalculatorApp(MDApp):
         #             text=f"[size=20][font={fonts[-1]['fn_regular']}]{md_icons[icon_name]}[/size][/font] {name_tab}"
         #         )
         #     )
+
+        # for tab_act in self.root.ids.tabs.get_tab_list():
+        #     print(tab_act.text)
+        #     if tab_act.text.find("Active") != -1:
+        #         tab_act.text = "* ACTIVE *"
+        #         # tab_act.add_widget(
+        #         #     MDLabel(
+        #         #         text="TEST OK!",
+        #         #         halign="right",
+        #         #     )
+        #         # )
+
+        # print(self.root.ids.tabs.get_tab_list())
+
+        pass
 
     def on_tab_switch(self, *args):
         # def on_tab_switch(self, instance_tabs, instance_tab, instance_tabs_label, tab_text):
@@ -412,6 +484,7 @@ class MortgageCalculatorApp(MDApp):
         print(self.current_tab)
         self.screen.ids.tabs.switch_tab(self.current_tab)
         self.calc_table(self)
+        self.update_menu()
         pass
 
     def calc_table(self, *args):
@@ -432,27 +505,55 @@ class MortgageCalculatorApp(MDApp):
         # annuity payment
         # https://temabiz.com/finterminy/ap-formula-i-raschet-annuitetnogo-platezha.html
         percent = interest / 100 / 12
-        monthly_payment = loan * (percent + percent / ((1 + percent) ** months - 1))
-        # print(monthly_payment)
 
         next_date = start_date
         next_prev_date = next_date
 
-        debt_end_month = loan
-        for i in range(0, months):
-            repayment_of_interest = debt_end_month * percent
-            repayment_of_loan_body = monthly_payment - repayment_of_interest
-            debt_end_month = debt_end_month - repayment_of_loan_body
-            # print(monthly_payment, repayment_of_interest, repayment_of_loan_body, debt_end_month)
-            row_data_for_tab.append(
-                [i + 1, next_date.strftime("%d-%m-%Y"), round(monthly_payment, 2), round(repayment_of_interest, 2),
-                 round(repayment_of_loan_body, 2), round(debt_end_month, 2)])
-            next_prev_date = next_date
-            next_date = next_month_date(next_date)
-        total_amount_of_payments = monthly_payment * months
-        overpayment_loan = total_amount_of_payments - loan
-        effective_interest_rate = ((total_amount_of_payments / loan - 1) / (months / 12)) * 100
-        # print(total_amount_of_payments, overpayment_loan, effective_interest_rate)
+        min_monthly_payment = 0
+        max_monthly_payment = 0
+
+        if self.payment_annuity:
+            monthly_payment = loan * (percent + percent / ((1 + percent) ** months - 1))
+            # print(monthly_payment)
+            debt_end_month = loan
+            for i in range(0, months):
+                repayment_of_interest = debt_end_month * percent
+                repayment_of_loan_body = monthly_payment - repayment_of_interest
+                debt_end_month = debt_end_month - repayment_of_loan_body
+                # print(monthly_payment, repayment_of_interest, repayment_of_loan_body, debt_end_month)
+                row_data_for_tab.append(
+                    [i + 1, next_date.strftime("%d-%m-%Y"), round(monthly_payment, 2), round(repayment_of_interest, 2),
+                     round(repayment_of_loan_body, 2), round(debt_end_month, 2)])
+                next_prev_date = next_date
+                next_date = next_month_date(next_date)
+            total_amount_of_payments = monthly_payment * months
+            overpayment_loan = total_amount_of_payments - loan
+            effective_interest_rate = ((total_amount_of_payments / loan - 1) / (months / 12)) * 100
+            # print(total_amount_of_payments, overpayment_loan, effective_interest_rate)
+        else:
+            repayment_of_interest = loan * percent
+            repayment_of_loan_body = loan / months
+            max_monthly_payment = repayment_of_interest + repayment_of_loan_body
+            # print(monthly_payment)
+            total_amount_of_payments = 0
+            overpayment_loan = 0
+            debt_end_month = loan
+            for i in range(0, months):
+                repayment_of_interest = debt_end_month * percent
+                debt_end_month = debt_end_month - repayment_of_loan_body
+                monthly_payment = repayment_of_interest + repayment_of_loan_body
+                total_amount_of_payments += monthly_payment
+                overpayment_loan += repayment_of_interest
+                # print(monthly_payment, repayment_of_interest, repayment_of_loan_body, debt_end_month)
+                row_data_for_tab.append(
+                    [i + 1, next_date.strftime("%d-%m-%Y"), round(monthly_payment, 2), round(repayment_of_interest, 2),
+                     round(repayment_of_loan_body, 2), round(debt_end_month, 2)])
+                next_prev_date = next_date
+                next_date = next_month_date(next_date)
+            min_monthly_payment = monthly_payment
+
+            effective_interest_rate = ((total_amount_of_payments / loan - 1) / (months / 12)) * 100
+            # print(total_amount_of_payments, overpayment_loan, effective_interest_rate)
 
         # show_canvas_stress(self.screen.ids.graph)
         show_canvas_stress(self.screen.ids.chart)
@@ -485,7 +586,11 @@ class MortgageCalculatorApp(MDApp):
         self.screen.ids.calc_data_table.add_widget(self.data_tables)
 
         # tab5
-        self.screen.ids.sum_payment_label.text = str(round(monthly_payment, 2))
+        if self.payment_annuity:
+            self.screen.ids.sum_payment_label.text = str(round(monthly_payment, 2))
+        else:
+            self.screen.ids.sum_payment_label.text = str(round(min_monthly_payment, 2)) + " ... " + str(round(max_monthly_payment, 2))
+
         self.screen.ids.sum_total_amount_of_payments_label.text = str(round(total_amount_of_payments, 2))
         self.screen.ids.sum_overpayment_loan_label.text = str(round(overpayment_loan, 2))
         self.screen.ids.sum_effective_interest_rate_label.text = str(round(effective_interest_rate, 2))
@@ -518,9 +623,8 @@ class MortgageCalculatorApp(MDApp):
             )
         self.dialog.open()
 
-
     def share_it(self, *args):
         share("title_share", "this content to share!")
 
 
-MortgageCalculatorApp().run()
+MortgageCalculator().run()
