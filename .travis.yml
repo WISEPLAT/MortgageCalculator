@@ -26,22 +26,22 @@ install:
   - ls -la
   - echo "TODO COMPILE 32bit"
   - yes | cp -f buildozer-32bit.spec buildozer.spec
-  - yes | buildozer android debug
+  - yes | buildozer android debug > my_log32.txt
   - ls -la
   - ls bin/ -l
   - echo "TODO"
   - gem install dpl --pre
-  - dpl releases --token $GITHUB_TOKEN --file "bin/mortgagecalculator-2.2-armeabi-v7a-debug.apk" --tag_name "v.2.2"
+  - dpl releases --token $GITHUB_TOKEN --file "bin/mortgagecalculator-2.3-armeabi-v7a-debug.apk" --tag_name "v.2.3"
   - echo "TODO COMPILE 64bit"
   - ls -la
   - rm -r -f .buildozer
   - ls -la
   - yes | cp -f buildozer-64bit.spec buildozer.spec
-  - yes | buildozer android debug
+  - yes | buildozer android debug > my_log64.txt
   - ls -la
   - ls bin/ -l
   - echo "TODO"
   - gem install dpl --pre
-  - dpl releases --token $GITHUB_TOKEN --file "bin/mortgagecalculator-2.2-arm64-v8a-debug.apk" --tag_name "v.2.2"
+  - dpl releases --token $GITHUB_TOKEN --file "bin/mortgagecalculator-2.3-arm64-v8a-debug.apk" --tag_name "v.2.3"
 script:
   - echo "OK"
